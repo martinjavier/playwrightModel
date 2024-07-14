@@ -4,7 +4,7 @@ import { LoginPage } from './pageobjects/LoginPage'
 test('purchase one item', async ({ page }) => {
 
     // Open Browser
-    await page.goto("https://www.saucedemo.com/");
+    await page.goto(`${process.env.URL}`)
   
     // Create a new instance a new loginpage object
     const loginPage = new LoginPage(page)
