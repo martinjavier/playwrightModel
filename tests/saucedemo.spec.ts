@@ -6,11 +6,14 @@ test('purchase one item', async ({ page }) => {
     // Open Browser
     await page.goto("https://www.saucedemo.com/");
   
-    // Instance a new loginpage object
+    // Create a new instance a new loginpage object
     const loginPage = new LoginPage(page)
 
     // Call login method
     await loginPage.loginWithCredentials('standard_user','secret_sauce')
+
+    // Check successful login
+    await loginPage.checkSucessfulLogin()
 
     // Get all products in a list
     const itemsContainer = await page.locator('#inventory_container .inventory_item').all()
