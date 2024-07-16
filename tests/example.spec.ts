@@ -53,19 +53,19 @@ test('List product titles', async ({ page }) => {
   await page.close()
 });
 
-test('test locators', async ({ page }) => {
+test('search for a product and select it', async ({ page }) => {
 
   // Open Browser
   await page.goto("https://www.mercadolibre.com.co/");
 
   // Get By Placeholder
-  // await page.getByPlaceholder('foo').fill("iphone");
+  await page.getByPlaceholder('foo').fill("iphone");
 
   // Get By AltText
-  // await page.getByAltText('foo').click();
+  await page.getByAltText('foo').click();
 
   // Get By Role
-  // await page.getByRole('link', {name: 'Mis compras'}).click();
+  await page.getByRole('link', {name: 'Mis compras'}).click();
 
   // Get By Role
   await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
@@ -74,25 +74,22 @@ test('test locators', async ({ page }) => {
   await page.close()
 });
 
-test('test login process', async ({ page }) => {
+test('search for a product', async ({ page }) => {
 
   // Open Browser
-  await page.goto("192.168.1.100:80");
+  await page.goto("https://www.mercadolibre.com.co/");
 
   // Get By Placeholder
-  // await page.getByPlaceholder('foo').fill("iphone");
+  await page.getByPlaceholder('foo').fill("iphone");
 
   // Get By AltText
-  // await page.getByAltText('foo').click();
+  await page.getByAltText('foo').click();
 
   // Get By Role
-  // await page.getByRole('link', {name: 'Mis compras'}).click();
+  await page.getByRole('link', {name: 'Mis compras'}).click();
 
   // Get By Role
   await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
-
-  // Pausa
-  // await page.pause();
 
   // Close the browser
   await page.close()
