@@ -59,37 +59,19 @@ test('search for a product and select it', async ({ page }) => {
   await page.goto("https://www.mercadolibre.com.co/");
 
   // Get By Placeholder
-  await page.getByPlaceholder('foo').fill("iphone");
+  await page.locator('input[id="cb1-edit"]').fill("iphone");
 
-  // Get By AltText
-  await page.getByAltText('foo').click();
+  // Press Enter key
+  await page.keyboard.press("Enter");
+
+  // Get By Role
+  await page.getByRole('link', {name: 'Apple iPhone 11 (128 GB) - Negro - Distribuidor Autorizado'}).click();
 
   // Get By Role
   await page.getByRole('link', {name: 'Mis compras'}).click();
 
   // Get By Role
-  await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
-
-  // Close the browser
-  await page.close()
-});
-
-test('search for a product', async ({ page }) => {
-
-  // Open Browser
-  await page.goto("https://www.mercadolibre.com.co/");
-
-  // Get By Placeholder
-  await page.getByPlaceholder('foo').fill("iphone");
-
-  // Get By AltText
-  await page.getByAltText('foo').click();
-
-  // Get By Role
-  await page.getByRole('link', {name: 'Mis compras'}).click();
-
-  // Get By Role
-  await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
+  await expect(page.getByRole('button', {name: 'Continuar', exact: true})).toBeVisible()
 
   // Close the browser
   await page.close()
