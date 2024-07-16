@@ -1,10 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {
+
   await page.goto('https://playwright.dev/');
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Playwright/);
+
+  // Close the browser
+  await page.close()
 });
 
 test('get started link', async ({ page }) => {
@@ -15,6 +19,9 @@ test('get started link', async ({ page }) => {
 
   // Expects page to have a heading with the name of Installation.
   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+
+  // Close the browser
+  await page.close()
 });
 
 test('List product titles', async ({ page }) => {
@@ -63,17 +70,14 @@ test('test locators', async ({ page }) => {
   // Get By Role
   await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
 
-  // Pausa
-  await page.pause();
-
   // Close the browser
-  // await page.close()
+  await page.close()
 });
 
 test('test login process', async ({ page }) => {
 
   // Open Browser
-  await page.goto("https://192.168.1.100:80");
+  await page.goto("192.168.1.100:80");
 
   // Get By Placeholder
   // await page.getByPlaceholder('foo').fill("iphone");
@@ -88,8 +92,8 @@ test('test login process', async ({ page }) => {
   await page.getByRole('link', {name: 'Ingresa', exact: true}).click();
 
   // Pausa
-  await page.pause();
+  // await page.pause();
 
   // Close the browser
-  // await page.close()
+  await page.close()
 });

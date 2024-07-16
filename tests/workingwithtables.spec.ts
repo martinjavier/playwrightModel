@@ -7,6 +7,8 @@ test('test web table', async ({ page }) => {
 
     const tableContainer = await page.locator("xpath=//table[@id='countries']")
 
+    await page.screenshot({path: 'screenshots/countries_table.png', fullPage: true})
+
     const rows = await tableContainer.locator("xpath=.//tr").all()
 
     const countries: Country[] = []

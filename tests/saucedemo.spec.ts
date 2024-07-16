@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pageobjects/LoginPage'
 
-test('purchase one item', async ({ page }) => {
+test('purchase one item', async ({ page }, testInfo) => {
 
     // Open Browser
     await page.goto(`${process.env.URL}`)
@@ -9,11 +9,18 @@ test('purchase one item', async ({ page }) => {
     // Create a new instance a new loginpage object
     const loginPage = new LoginPage(page)
 
+    await testInfo.attach('login', {
+      body: await page.screenshot(),
+      contentType: 'image/png'
+    })
+
     // Call login method
     await loginPage.loginWithCredentials('standard_user','secret_sauce')
 
     // Check successful login
     await loginPage.checkSucessfulLogin()
+
+    await page.screenshot({path: 'screenshots/successful_login.png', fullPage: true})
 
     // Get all products in a list
     const itemsContainer = await page.locator('#inventory_container .inventory_item').all()
@@ -35,8 +42,12 @@ test('purchase one item', async ({ page }) => {
     // Click on 'Add To Cart' button
     await randomItem.getByRole('button', {name: 'Add to cart'}).click()
 
+    await page.screenshot({path: 'screenshots/add_to_cart.png', fullPage: true})
+
     // Go to the cart
     await page.locator('a.shopping_cart_link').click()
+
+    await page.screenshot({path: 'screenshots/inside_cart.png', fullPage: true})
 
     // Verify the Checkout button
     expect(await page.getByRole('button', {name:'Checkout'})).toBeVisible()
@@ -59,6 +70,8 @@ test('purchase one item', async ({ page }) => {
     await page.getByRole('textbox', {name:'Last Name'}).fill("User Lastname");
     await page.getByRole('textbox', {name:'Zip/Postal Code'}).fill("90210");
 
+    await page.screenshot({path: 'screenshots/user_information.png', fullPage: true})
+
     // Verify Continue button
     await expect(page.getByRole('button', {name:'Continue'})).toBeVisible()
 
@@ -73,6 +86,8 @@ test('purchase one item', async ({ page }) => {
 
     // Verify final message
     await expect(page.getByRole('heading', {name:'Thank you for your order!'})).toBeVisible()
+
+    await page.screenshot({path: 'screenshots/Finish_verification.png', fullPage: true})
 
     // Close the browser
     await page.close()
