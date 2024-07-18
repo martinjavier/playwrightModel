@@ -17,3 +17,5 @@
 - With screenshots on Jenkins (Done)
 
 - Jenkins configuration from local Jenkinsfile (Done)
+
+- Running all test cases (Done)

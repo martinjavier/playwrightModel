@@ -13,7 +13,7 @@ test('test web table', async ({ page }) => {
 
     const countries: Country[] = []
 
-    console.log("Cantidad:",rows.length)
+    // console.log("Cantidad:",rows.length)
 
     for(let row of rows){
         let country: Country = {
@@ -33,8 +33,7 @@ test('test web table', async ({ page }) => {
 
     const countriesWherePeopleSpeaksPortuguese = countries.filter(country => country.primaryLanguage === 'Portuguese')
 
-    console.log("Portugues: ", countriesWherePeopleSpeaksPortuguese)
-
+    // console.log("Portugues: ", countriesWherePeopleSpeaksPortuguese)
 
     // Close the browser
     await page.close()

@@ -37,7 +37,7 @@ test('purchase one item', async ({ page }, testInfo) => {
     const expectedPrice = await randomItem.locator('.inventory_item_price').innerText()
 
     // Print product information
-    console.log(`Price: ${expectedPrice} Name: ${expectedName} Description: ${expectedDescription}`)
+    // console.log(`Price: ${expectedPrice} Name: ${expectedName} Description: ${expectedDescription}`)
 
     // Click on 'Add To Cart' button
     await randomItem.getByRole('button', {name: 'Add to cart'}).click()
