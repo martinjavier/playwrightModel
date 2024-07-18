@@ -1,6 +1,6 @@
 # playwrightModel
 
-Adding code to working with tables (Done)\n
+Adding code to working with tables (Done)
 Second interceptor test case (Done)
 Adding Github Actions (Done)
 Headless equal true (Done)
