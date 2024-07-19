@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('e2e-tests') {
             steps {
-              sh 'npm ci'
+              sh 'npm install'
               sh 'npx playwright test'
             }
         }

@@ -16,9 +16,10 @@ test('Get environment healthcheck', async({page}) => {
 test.describe.serial('User lifecycle', () => {
 
   let authToken: string;
-  const userName = faker.internet.userName()
-  const userEMail = faker.internet.email()
-  const userPassword = faker.internet.password()
+  const name = generateRandomString(8)
+  const userName = name
+  const userEMail = name+'@hotmail.com'
+  const userPassword = generateRandomString(8)
 
   test.beforeAll(async ({ request }) => {
     // Register a new user
