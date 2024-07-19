@@ -5,3 +5,6 @@ node_modules/
 /playwright/.cache/
 .DS_Store
 /screenshots/
+.env.api
+.env.qa
+.env.dev
