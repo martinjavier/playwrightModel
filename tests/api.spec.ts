@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 import axios from 'axios';
 import { setToken, getToken } from './functions/tokenManager';
 import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser } from './functions/apirestFunctions';
-
-const userName = 'user008'
-const userEMail = 'user008@hotmail.com'
-const userPassword = 'Buenaventura'
+import { generateRandomString } from './functions/generationFunctions';
 
 test.describe.serial('User lifecycle', () => {
 
   let authToken: string;
+  const userName = generateRandomString(10)
+  const userEMail = generateRandomString(10)+'@hotmail.com'
+  const userPassword = generateRandomString(10)
 
   test('User creation', async({page}) => {
     // Get environment health
@@ -70,7 +70,6 @@ test.describe.serial('User lifecycle', () => {
 
     // Delte an user
     const response = await DeleteUser(`${process.env.URL}`);
-    console.log("RESPONSE: ", response)
     expect(response?.data.success).toBe(true)
     expect(response?.data.status).toBe(200)
     expect(response?.data.message).toBe('Account successfully deleted')
