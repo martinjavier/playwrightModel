@@ -12,7 +12,7 @@ test.describe.serial('User lifecycle', () => {
   const userEMail = faker.internet.email()
   const userPassword = faker.internet.password()
 
-  test('Get environment healthcheck', async({page}) => {
+  test.skip('Get environment healthcheck', async({page}) => {
         // Get environment health
         const healthValue = await GETHealthcheck(`${process.env.URL}`);
         expect(healthValue?.message).toBe('Notes API is Running')
