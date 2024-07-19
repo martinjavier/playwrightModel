@@ -5,6 +5,14 @@ import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, Dele
 import { generateRandomString } from './functions/generationFunctions';
 import { faker } from '@faker-js/faker';
 
+test('Get environment healthcheck', async({page}) => {
+  // Get environment health
+  const healthValue = await GETHealthcheck(`${process.env.URL}`);
+  expect(healthValue?.message).toBe('Notes API is Running')
+  expect(healthValue?.status).toBe(200)
+  expect(healthValue?.success).toBe(true)
+})
+
 test.describe.serial('User lifecycle', () => {
 
   let authToken: string;
@@ -12,30 +20,24 @@ test.describe.serial('User lifecycle', () => {
   const userEMail = faker.internet.email()
   const userPassword = faker.internet.password()
 
-  test.skip('Get environment healthcheck', async({page}) => {
-        // Get environment health
-        const healthValue = await GETHealthcheck(`${process.env.URL}`);
-        expect(healthValue?.message).toBe('Notes API is Running')
-        expect(healthValue?.status).toBe(200)
-        expect(healthValue?.success).toBe(true)
-  })
-
-  test('User creation', async({page}) => {
-
-    console.log("Creation userName: ", userName)
-    console.log("Creation userEMail: ", userEMail)
-    console.log("Creation userPassword: ", userPassword)
-
+  test.beforeAll(async ({ request }) => {
     // Register a new user
     const registerValue = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
     console.log("Register Value: ", registerValue)
     expect(registerValue?.data.success).toBe(true)
     expect(registerValue?.data.message).toBe('User account created successfully')
     expect(registerValue?.data.status).toBe(201)
+  });
+
+  test('User lifecycle', async({page}) => {
+
+    console.log("Creation userName: ", userName)
+    console.log("Creation userEMail: ", userEMail)
+    console.log("Creation userPassword: ", userPassword)
 
     // Login
-    const loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
-    const token = loginResult?.response.data.data.token;
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
     authToken = token;
     setToken(authToken)
     expect(loginResult?.response.data.status).toBe(200)
@@ -44,22 +46,19 @@ test.describe.serial('User lifecycle', () => {
 
     // Get Profile
     authToken = getToken()
-    const returnValue = await GETProfile(`${process.env.URL}`);
+    var returnValue = await GETProfile(`${process.env.URL}`);
     expect(returnValue?.data.message).toBe('Profile successful')
     expect(returnValue?.data.status).toBe(200)
 
     // Logout
-    const response = await DELETELogout(`${process.env.URL}`);
+    var response = await DELETELogout(`${process.env.URL}`);
     expect(response?.data.success).toBe(true)
     expect(response?.data.status).toBe(200)
     expect(response?.data.message).toBe('User has been successfully logged out')
-  })
-
-  test('Delete an user', async({page}) => {
 
     // Login
-    const loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
-    const token = loginResult?.response.data.data.token;
+    loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    token = loginResult?.response.data.data.token;
     authToken = token;
     setToken(authToken)
     expect(loginResult?.response.data.status).toBe(200)
@@ -68,12 +67,12 @@ test.describe.serial('User lifecycle', () => {
 
     // Get Profile
     authToken = getToken()
-    const returnValue = await GETProfile(`${process.env.URL}`);
+    returnValue = await GETProfile(`${process.env.URL}`);
     expect(returnValue?.data.message).toBe('Profile successful')
     expect(returnValue?.data.status).toBe(200)
 
     // Delte an user
-    const response = await DeleteUser(`${process.env.URL}`);
+    response = await DeleteUser(`${process.env.URL}`);
     expect(response?.data.success).toBe(true)
     expect(response?.data.status).toBe(200)
     expect(response?.data.message).toBe('Account successfully deleted')
