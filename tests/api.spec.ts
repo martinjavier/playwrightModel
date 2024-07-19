@@ -7,48 +7,46 @@ test.describe.serial('Flujo de autenticación', () => {
 
   let authToken: string;
 
-  test('Llamada Get Healthcheck', async({page}) => {
-    console.log("URL: ", `${process.env.URL}`)
+  test('Get Healthcheck', async({page}) => {
     const healthValue = await GETHealthcheck(`${process.env.URL}`);
-    console.log("Health Check: ", healthValue)
+    expect(healthValue?.message).toBe('Notes API is Running')
+    expect(healthValue?.status).toBe(200)
+    expect(healthValue?.success).toBe(true)
   })
 
-  test('Llamada Post Register', async({page}) => {
-    const registerValue = await POSTRegister(`${process.env.URL}`);
-    console.log("POST Register Data", registerValue?.data);
-    console.log("POST Register Status", registerValue?.status);
+  test.skip('Register a new user', async({page}) => {
+    const userName = 'Horacio'
+    const userEMail = 'horacio@hotmail.com'
+    const userPassword = 'Buenaventura'
+    const registerValue = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerValue?.data.success).toBe(true)
+    expect(registerValue?.data.message).toBe('User account created successfully')
+    expect(registerValue?.data.status).toBe(201)
   })
 
-  /*
-
-  test('Llamada Post Login', async({page}) => {
-    const loginResult = await POSTLogin(`${process.env.URL}`);
+  test('Login process', async({page}) => {
+    const userEMail = "martinjavier3@hotmail.com"
+    const userPassword = "ClaveSecreta"
+    const loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
     const token = loginResult?.response.data.data.token;
     authToken = token;
-    setToken(authToken);
-    console.log("Valor del Token: ",loginResult?.response.data.data.token);
-    console.log("Valor del Status: ",loginResult?.response.data.status);
-    console.log("Valor del Message: ",loginResult?.response.data.message);
-    expect(loginResult?.response.data.status).toBe(200);
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
     expect(authToken).toBeTruthy();
     expect(getToken()).toBe(authToken);
   })
-  
-  test('Llamada Get Profile', async({page}) => {
-    await page.waitForTimeout(1000);
+ 
+  test('Get Profile', async({page}) => {
     const returnValue = await GETProfile(`${process.env.URL}`);
-    console.log("Return Message: ", returnValue?.data.message);
-    console.log("Return Status: ", returnValue?.data.status);
+    expect(returnValue?.data.message).toBe('Profile successful')
+    expect(returnValue?.data.status).toBe(200)
   })
-  
-  test('Llamada Post Logout', async({page}) => {
-    await page.waitForTimeout(10000);
+
+  test('Logout session', async({page}) => {
     const response = await DELETELogout(`${process.env.URL}`);
-    console.log("Response: ", response)
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
   })
-*/
+
 })
-
-
-
-

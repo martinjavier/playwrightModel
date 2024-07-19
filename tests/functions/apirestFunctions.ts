@@ -11,9 +11,9 @@ export async function GETHealthcheck(apiBaseUrl) {
     }
 }
 
-export async function POSTRegister(apiBaseUrl) {
+export async function POSTRegister(apiBaseUrl, username, useremail, userpassword) {
   try {
-      const data = { name: 'Martin', email: 'martinjavier1@hotmail.com', password: 'ClaveSecreta' };
+      const data = { name: username, email: useremail, password: userpassword };
       const response = await axios.post(`${apiBaseUrl}/users/register`, data);
       return response;
   } catch (error) {
@@ -21,13 +21,12 @@ export async function POSTRegister(apiBaseUrl) {
   }
 }
 
-export async function POSTLogin(apiBaseUrl) {
+export async function POSTLogin(apiBaseUrl, userEMail, userPassword) {
     try {
-        const data = { email: 'martinjavier3@hotmail.com', password: 'ClaveSecreta' };
+        const data = { email: userEMail, password: userPassword };
         const response = await axios.post(`${apiBaseUrl}/users/login`, data);
         const token = response.data.data.token;
         setToken(token);
-        //axios.defaults.headers.common['x-auth-token'] = response.data.data.token;
         return { response, token };
     } catch (error) {
         console.error('Error en la solicitud POST:', error.message);
@@ -37,7 +36,7 @@ export async function POSTLogin(apiBaseUrl) {
 export async function GETProfile(apiBaseUrl) {
   try {
       const currentToken = getToken();
-      console.log("Token recibido en GetProfile: ", currentToken);
+      //console.log("Token recibido en GetProfile: ", currentToken);
       const response = await axios.get(`${apiBaseUrl}/users/profile`, {
         headers: {
           'x-auth-token': currentToken
