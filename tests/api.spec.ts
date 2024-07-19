@@ -12,12 +12,15 @@ test.describe.serial('User lifecycle', () => {
   const userEMail = faker.internet.email()
   const userPassword = faker.internet.password()
 
+  test('Get environment health', async({page}) => {
+        // Get environment health
+        const healthValue = await GETHealthcheck(`${process.env.URL}`);
+        expect(healthValue?.message).toBe('Notes API is Running')
+        expect(healthValue?.status).toBe(200)
+        expect(healthValue?.success).toBe(true)
+  })
+
   test('User creation', async({page}) => {
-    // Get environment health
-    const healthValue = await GETHealthcheck(`${process.env.URL}`);
-    expect(healthValue?.message).toBe('Notes API is Running')
-    expect(healthValue?.status).toBe(200)
-    expect(healthValue?.success).toBe(true)
 
     // Register a new user
     const registerValue = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
@@ -48,11 +51,6 @@ test.describe.serial('User lifecycle', () => {
   })
 
   test('Delete an user', async({page}) => {
-    // Get environment health
-    const healthValue = await GETHealthcheck(`${process.env.URL}`);
-    expect(healthValue?.message).toBe('Notes API is Running')
-    expect(healthValue?.status).toBe(200)
-    expect(healthValue?.success).toBe(true)
 
     // Login
     const loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
