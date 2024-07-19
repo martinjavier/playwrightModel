@@ -12,7 +12,7 @@ test('purchase one item interceptor', async ({ page }, testInfo) => {
     await page.route("**/*.{png,jpg,jpeg,svg}", (route) => route.abort())
 
     // Open Browser
-    await page.goto(`${process.env.URL}`)
+    await page.goto('https://www.saucedemo.com/')
   
     // Create a new instance a new loginpage object
     const loginPage = new LoginPage(page)
