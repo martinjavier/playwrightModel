@@ -24,17 +24,12 @@ test.describe.serial('User lifecycle', () => {
   test.beforeAll(async ({ request }) => {
     // Register a new user
     const registerValue = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
-    console.log("Register Value: ", registerValue)
     expect(registerValue?.data.success).toBe(true)
     expect(registerValue?.data.message).toBe('User account created successfully')
     expect(registerValue?.data.status).toBe(201)
   });
 
   test('User lifecycle', async({page}) => {
-
-    console.log("Creation userName: ", userName)
-    console.log("Creation userEMail: ", userEMail)
-    console.log("Creation userPassword: ", userPassword)
 
     // Login
     var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
