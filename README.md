@@ -20,22 +20,8 @@
 
 - Running all test cases (Done)
 
-- Include basic API REST functions
+- Include basic API REST functions (Done)
 
-- Include api rest cases
+- Include api rest cases (Done)
 
-Create three files:
-.env.api
-.env.qa
-.env.dev
-
-With a line:
-URL=(your_URL)
-
-Execution:
-
-To set NODE_ENV with a value: 'dev', 'qa' or 'api', run:
-export NODE_ENV=api 
-
-To verify, run:
-echo $NODE_ENV
+- All API test cases running fine (Done)
