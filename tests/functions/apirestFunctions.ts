@@ -36,7 +36,6 @@ export async function POSTLogin(apiBaseUrl, userEMail, userPassword) {
 export async function GETProfile(apiBaseUrl) {
   try {
       const currentToken = getToken();
-      //console.log("Token recibido en GetProfile: ", currentToken);
       const response = await axios.get(`${apiBaseUrl}/users/profile`, {
         headers: {
           'x-auth-token': currentToken
@@ -61,3 +60,18 @@ export async function DELETELogout(apiBaseUrl) {
       console.error('Error en la solicitud DELETE Logout:', error.message);
   }
 }
+
+export async function DeleteUser(apiBaseUrl) {
+    try {
+      const currentToken = getToken()
+        const response = await axios.delete(`${apiBaseUrl}/users/delete-account`, {
+          headers: {
+            'x-auth-token': currentToken
+          }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error en la solicitud DELETE User:', error.message);
+    }
+  }
+
