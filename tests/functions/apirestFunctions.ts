@@ -11,17 +11,17 @@ export async function GETHealthcheck(apiBaseUrl) {
     }
 }
 
-export async function POSTRegister(apiBaseUrl, username, useremail, userpassword) {
+export async function POSTRegister(apiBaseUrl: String, username: String, useremail: String, userpassword: String) {
   try {
       const data = { name: username, email: useremail, password: userpassword };
       const response = await axios.post(`${apiBaseUrl}/users/register`, data);
       return response;
   } catch (error) {
-      console.error('Error en la solicitud POST Register:', error.message);
+      console.error('POST Register Error:', error.message, error.response, error.data)
   }
 }
 
-export async function POSTLogin(apiBaseUrl, userEMail, userPassword) {
+export async function POSTLogin(apiBaseUrl: String, userEMail: String, userPassword: String) {
     try {
         const data = { email: userEMail, password: userPassword };
         const response = await axios.post(`${apiBaseUrl}/users/login`, data);
@@ -33,7 +33,7 @@ export async function POSTLogin(apiBaseUrl, userEMail, userPassword) {
     }
 }
 
-export async function GETProfile(apiBaseUrl) {
+export async function GETProfile(apiBaseUrl: String) {
   try {
       const currentToken = getToken();
       const response = await axios.get(`${apiBaseUrl}/users/profile`, {
@@ -47,7 +47,7 @@ export async function GETProfile(apiBaseUrl) {
   }
 }
 
-export async function DELETELogout(apiBaseUrl) {
+export async function DELETELogout(apiBaseUrl: String) {
   try {
     const currentToken = getToken()
       const response = await axios.delete(`${apiBaseUrl}/users/logout`, {
@@ -61,7 +61,7 @@ export async function DELETELogout(apiBaseUrl) {
   }
 }
 
-export async function DeleteUser(apiBaseUrl) {
+export async function DeleteUser(apiBaseUrl: String) {
     try {
       const currentToken = getToken()
         const response = await axios.delete(`${apiBaseUrl}/users/delete-account`, {

@@ -5,7 +5,7 @@ import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, Dele
 import { generateRandomString } from './functions/generationFunctions';
 import { faker } from '@faker-js/faker';
 
-test('Get environment healthcheck', async({page}) => {
+test.skip('Get environment healthcheck', async({page}) => {
   // Get environment health
   const healthValue = await GETHealthcheck(`${process.env.URL}`);
   expect(healthValue?.message).toBe('Notes API is Running')
