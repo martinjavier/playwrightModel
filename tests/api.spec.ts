@@ -3,13 +3,14 @@ import axios from 'axios';
 import { setToken, getToken } from './functions/tokenManager';
 import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser } from './functions/apirestFunctions';
 import { generateRandomString } from './functions/generationFunctions';
+import { faker } from '@faker-js/faker';
 
 test.describe.serial('User lifecycle', () => {
 
   let authToken: string;
-  const userName = generateRandomString(10)
-  const userEMail = generateRandomString(10)+'@hotmail.com'
-  const userPassword = generateRandomString(10)
+  const userName = faker.internet.userName()
+  const userEMail = faker.internet.email()
+  const userPassword = faker.internet.password()
 
   test('User creation', async({page}) => {
     // Get environment health
