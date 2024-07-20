@@ -47,6 +47,23 @@ export async function GETProfile(apiBaseUrl: String) {
   }
 }
 
+export async function UpdateProfile(apiBaseUrl: string, userData: any) {
+  try {
+    const currentToken = getToken();
+    const response = await axios.patch(`${apiBaseUrl}/users/profile`, 
+      userData,  
+      {
+        headers: {
+          'x-auth-token': currentToken
+        }
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error('Error on Update Profile:', error.response ? error.response.data : error.message);
+  }
+}
+
 export async function DELETELogout(apiBaseUrl: String) {
   try {
     const currentToken = getToken()
@@ -73,5 +90,19 @@ export async function DeleteUser(apiBaseUrl: String) {
     } catch (error) {
         console.error('Error en la solicitud DELETE User:', error.message);
     }
-  }
+}
 
+export async function CreateNewNote(apiBaseUrl: String, noteTitle: String, noteDescription: String, noteCategory: String) {
+  try {
+      const currentToken = getToken();
+      const data = { title: noteTitle, description: noteDescription, category: noteCategory };
+      const response = await axios.post(`${apiBaseUrl}/notes`, data, {
+        headers: {
+          'x-auth-token': currentToken
+        }
+      });
+      return response;
+  } catch (error) {
+      console.error('Create New Note Error:', error.message, error.response, error.data)
+  }
+}

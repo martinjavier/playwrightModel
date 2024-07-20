@@ -25,3 +25,15 @@
 - Include api rest cases (Done)
 
 - All API test cases running fine (Done)
+
+- POST /notes (DONE)
+
+- GET /notes (TO DO)
+
+- GET /notes/{id} (TO DO)
+
+- PUT /notes/{id} (TO DO)
+
+- PATCH /notes/{id} (TO DO)
+
+- DELETE /notes/{id} (TO DO)
