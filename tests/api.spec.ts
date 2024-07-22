@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import axios from 'axios';
 import { setToken, getToken } from './functions/tokenManager';
 import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote, ChangeNoteStatus, DeleteOneNote } from './functions/apirestFunctions';
 import { generateRandomString, generateRandomNumber} from './functions/generationFunctions';
@@ -16,23 +15,53 @@ test('Get environment healthcheck', async({page}) => {
 test.describe.serial('User lifecycle', () => {
 
   let authToken: string;
-  const name = generateRandomString(8)
-  const userName = name
-  const userEMail = name+'@hotmail.com'
-  const userPassword = generateRandomString(8)
-  const userPhoneNumber = generateRandomNumber(9)
-  const userCompanyName = faker.company.name()
 
-  test.beforeAll(async ({ request }) => {
+  test('User creation', async({request}) => {
+
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+
     // Register a new user
     const registerValue = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
     expect(registerValue?.data.success).toBe(true)
     expect(registerValue?.data.message).toBe('User account created successfully')
     expect(registerValue?.data.status).toBe(201)
-  });
 
-  test('User creation', async({request}) => {
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // Delte an user
+    const response = await DeleteUser(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('Account successfully deleted')
+
+
+  })
+
+  test('Get User Profile', async({request}) => {
     
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+
+    // Register a new user
+    const registerResult = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerResult?.data.success).toBe(true)
+    expect(registerResult?.data.message).toBe('User account created successfully')
+    expect(registerResult?.data.status).toBe(201)
+
     // Login
     var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
     var token = loginResult?.response.data.data.token;
@@ -50,35 +79,82 @@ test.describe.serial('User lifecycle', () => {
     expect(returnValue?.data.data.name).toBe(userName)
     expect(returnValue?.data.data.email).toBe(userEMail)
 
+    // Delte an user
+    const response = await DeleteUser(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('Account successfully deleted')
+  })
+
+  test('Update User Profile', async({request}) => {
+    
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+    const userPhoneNumber = generateRandomNumber(9)
+    const userCompanyName = faker.company.name()
+
+    // Register a new user
+    const registerResult = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerResult?.data.success).toBe(true)
+    expect(registerResult?.data.message).toBe('User account created successfully')
+    expect(registerResult?.data.status).toBe(201)
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
     // Update Profile
     authToken = getToken()
     const userData = { name: userName, phone: userPhoneNumber, company: userCompanyName };
-    var returnValue = await UpdateProfile(`${process.env.URL}`, userData)
-    expect(returnValue?.data.message).toBe('Profile updated successful')
-    expect(returnValue?.data.status).toBe(200)
-    expect(returnValue?.data.data.name).toBe(userName)
-    expect(returnValue?.data.data.email).toBe(userEMail)
-    expect(returnValue?.data.data.phone).toBe(userPhoneNumber)
-    expect(returnValue?.data.data.company).toBe(userCompanyName)
+    var updateResult = await UpdateProfile(`${process.env.URL}`, userData)
+    expect(updateResult?.data.message).toBe('Profile updated successful')
+    expect(updateResult?.data.status).toBe(200)
+    expect(updateResult?.data.data.name).toBe(userName)
+    expect(updateResult?.data.data.email).toBe(userEMail)
+    expect(updateResult?.data.data.phone).toBe(userPhoneNumber)
+    expect(updateResult?.data.data.company).toBe(userCompanyName)
 
     // Verify Updated Profile Information
-    returnValue = await GETProfile(`${process.env.URL}`);
-    expect(returnValue?.data.message).toBe('Profile successful')
-    expect(returnValue?.data.status).toBe(200)
-    expect(returnValue?.data.data.name).toBe(userName)
-    expect(returnValue?.data.data.email).toBe(userEMail)
-    expect(returnValue?.data.data.phone).toBe(userPhoneNumber)
-    expect(returnValue?.data.data.company).toBe(userCompanyName)
+    const getResult = await GETProfile(`${process.env.URL}`);
+    expect(getResult?.data.message).toBe('Profile successful')
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.data.name).toBe(userName)
+    expect(getResult?.data.data.email).toBe(userEMail)
+    expect(getResult?.data.data.phone).toBe(userPhoneNumber)
+    expect(getResult?.data.data.company).toBe(userCompanyName)
 
-    // Logout
-    var response = await DELETELogout(`${process.env.URL}`);
-    expect(response?.data.success).toBe(true)
-    expect(response?.data.status).toBe(200)
-    expect(response?.data.message).toBe('User has been successfully logged out')
+    // Delte an user
+    const deleteResult = await DeleteUser(`${process.env.URL}`);
+    expect(deleteResult?.data.success).toBe(true)
+    expect(deleteResult?.data.status).toBe(200)
+    expect(deleteResult?.data.message).toBe('Account successfully deleted')
+  })
+
+  test('Logout Account', async({request}) => {
+    
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+
+    // Register a new user
+    const registerResult = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerResult?.data.success).toBe(true)
+    expect(registerResult?.data.message).toBe('User account created successfully')
+    expect(registerResult?.data.status).toBe(201)
 
     // Login
-    loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
-    token = loginResult?.response.data.data.token;
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
     authToken = token;
     setToken(authToken)
     expect(loginResult?.response.data.status).toBe(200)
@@ -87,19 +163,57 @@ test.describe.serial('User lifecycle', () => {
 
     // Get Profile
     authToken = getToken()
-    returnValue = await GETProfile(`${process.env.URL}`);
+    var returnValue = await GETProfile(`${process.env.URL}`);
     expect(returnValue?.data.message).toBe('Profile successful')
     expect(returnValue?.data.status).toBe(200)
     expect(returnValue?.data.data.name).toBe(userName)
     expect(returnValue?.data.data.email).toBe(userEMail)
-    expect(returnValue?.data.data.phone).toBe(userPhoneNumber)
-    expect(returnValue?.data.data.company).toBe(userCompanyName)
 
-    // Delte an user
-    response = await DeleteUser(`${process.env.URL}`);
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
     expect(response?.data.success).toBe(true)
     expect(response?.data.status).toBe(200)
-    expect(response?.data.message).toBe('Account successfully deleted')
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test('Delete User Account', async({request}) => {
+    
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+
+    // Register a new user
+    const registerResult = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerResult?.data.success).toBe(true)
+    expect(registerResult?.data.message).toBe('User account created successfully')
+    expect(registerResult?.data.status).toBe(201)
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // Get Profile
+    authToken = getToken()
+    var getResult = await GETProfile(`${process.env.URL}`);
+    expect(getResult?.data.message).toBe('Profile successful')
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.data.name).toBe(userName)
+    expect(getResult?.data.data.email).toBe(userEMail)
+
+    // Delte an user
+    const deleteResult = await DeleteUser(`${process.env.URL}`);
+    expect(deleteResult?.data.success).toBe(true)
+    expect(deleteResult?.data.status).toBe(200)
+    expect(deleteResult?.data.message).toBe('Account successfully deleted')
+
   })
 
 })
