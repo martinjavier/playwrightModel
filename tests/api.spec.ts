@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import axios from 'axios';
 import { setToken, getToken } from './functions/tokenManager';
-import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote } from './functions/apirestFunctions';
+import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote } from './functions/apirestFunctions';
 import { generateRandomString, generateRandomNumber} from './functions/generationFunctions';
 import { faker } from '@faker-js/faker';
 
@@ -111,9 +111,9 @@ test.describe.serial('Notes lifecycle', () => {
   const userName = name
   const userEMail = name+'@hotmail.com'
   const userPassword = generateRandomString(8)
-  const noteTitle = generateRandomString(8)
-  const noteDescription = generateRandomString(12)
-  const noteCategory = 'Home' // Home, Work or Personal
+  var noteTitle = generateRandomString(8)
+  var noteDescription = generateRandomString(12)
+  var noteCategory = 'Home' // Home, Work or Personal
 
   test.beforeAll(async ({ request }) => {
     // Register a new user
@@ -123,7 +123,7 @@ test.describe.serial('Notes lifecycle', () => {
     expect(registerValue?.data.status).toBe(201)
   });
 
-  test('Notes creation', async({page}) => {
+  test('Note creation', async({page}) => {
 
     // Login
     var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
@@ -137,16 +137,9 @@ test.describe.serial('Notes lifecycle', () => {
     // Create a new Note
     authToken = getToken()
     const registerValue = await CreateNewNote(`${process.env.URL}`, noteTitle, noteDescription, noteCategory);
-    console.log("Note creation registerValue: ", registerValue)
     expect(registerValue?.data.success).toBe(true)
     expect(registerValue?.data.status).toBe(200)
     expect(registerValue?.data.message).toBe('Note successfully created')
-
-    // Get Profile
-    authToken = getToken()
-    var returnValue = await GETProfile(`${process.env.URL}`);
-    expect(returnValue?.data.message).toBe('Profile successful')
-    expect(returnValue?.data.status).toBe(200)
 
     // Logout
     var response = await DELETELogout(`${process.env.URL}`);
@@ -154,27 +147,148 @@ test.describe.serial('Notes lifecycle', () => {
     expect(response?.data.status).toBe(200)
     expect(response?.data.message).toBe('User has been successfully logged out')
 
+  })
+
+  test('Get All Notes', async({page}) => {
+
     // Login
-    loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
-    token = loginResult?.response.data.data.token;
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    var authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // Get All Notes
+    var getResult = await GetAllNotes(`${process.env.URL}`)
+    expect(getResult?.data.success).toBe(true)
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.message).toBe('Notes successfully retrieved')
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test('Get One Note', async({page}) => {
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    var authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // New Note Information
+    noteTitle = generateRandomString(8)
+    noteDescription = generateRandomString(12)
+    noteCategory = 'Home' // Home, Work or Personal
+
+    // Create a new Note
+    authToken = getToken()
+    const registerValue = await CreateNewNote(`${process.env.URL}`, noteTitle, noteDescription, noteCategory);
+    var noteID = registerValue?.data.data.id
+    expect(registerValue?.data.success).toBe(true)
+    expect(registerValue?.data.status).toBe(200)
+    expect(registerValue?.data.message).toBe('Note successfully created')
+
+    // Get One Note
+    authToken = getToken()
+    var getResult = await GetOneNote(`${process.env.URL}`, noteID)
+    expect(getResult?.data.success).toBe(true)
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.message).toBe('Note successfully retrieved')
+    expect(getResult?.data.data.id).toBe(noteID)
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test('Update Existing Note', async({page}) => {
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    var authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // New note information
+    noteTitle = generateRandomString(8)
+    noteDescription = generateRandomString(12)
+    noteCategory = 'Home' // Home, Work or Personal
+
+    // Create a new Note
+    authToken = getToken()
+    const registerValue = await CreateNewNote(`${process.env.URL}`, noteTitle, noteDescription, noteCategory);
+    var noteID = registerValue?.data.data.id
+    expect(registerValue?.data.success).toBe(true)
+    expect(registerValue?.data.status).toBe(200)
+    expect(registerValue?.data.message).toBe('Note successfully created')
+
+    // New note information for update
+    const newNoteTitle = generateRandomString(8)
+    const newNoteDescription = generateRandomString(12)
+    const newNoteCategory = 'Work' // Home, Work or Personal
+
+    // Update Existing Note
+    authToken = getToken()
+    const noteData = { id: noteID, title: newNoteTitle, description: newNoteDescription, completed: true, category: newNoteCategory };
+    const updateResponse = await UpdateExistingNote(`${process.env.URL}`, noteID, noteData)
+    expect(updateResponse?.data.success).toBe(true)
+    expect(updateResponse?.data.status).toBe(200)
+    expect(updateResponse?.data.message).toBe('Note successfully Updated')
+
+    // Get One Note
+    authToken = getToken()
+    var getResult = await GetOneNote(`${process.env.URL}`, noteID)
+    expect(getResult?.data.success).toBe(true)
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.message).toBe('Note successfully retrieved')
+    expect(getResult?.data.data.id).toBe(noteID)
+    expect(getResult?.data.data.title).toBe(newNoteTitle)
+    expect(getResult?.data.data.description).toBe(newNoteDescription)
+    expect(getResult?.data.data.completed).toBe(true)
+    expect(getResult?.data.data.category).toBe("Work")
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test.afterAll(async ({ request }) => {
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
     authToken = token;
     setToken(authToken)
     expect(loginResult?.response.data.status).toBe(200)
     expect(authToken).toBeTruthy();
     expect(getToken()).toBe(authToken);
 
-    // Get Profile
-    authToken = getToken()
-    returnValue = await GETProfile(`${process.env.URL}`);
-    expect(returnValue?.data.message).toBe('Profile successful')
-    expect(returnValue?.data.status).toBe(200)
-
     // Delte an user
-    response = await DeleteUser(`${process.env.URL}`);
+    var response = await DeleteUser(`${process.env.URL}`);
     expect(response?.data.success).toBe(true)
     expect(response?.data.status).toBe(200)
     expect(response?.data.message).toBe('Account successfully deleted')
-  })
+
+  });
 
 })
 

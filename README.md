@@ -1,6 +1,6 @@
 # playwrightModel
 
-- Adding code to working with tables (Done)
+- Adding code to work with tables (Done)
 
 - Second interceptor test case (Done)
 
@@ -28,11 +28,11 @@
 
 - POST /notes (DONE)
 
-- GET /notes (TO DO)
+- GET /notes (DONE)
 
-- GET /notes/{id} (TO DO)
+- GET /notes/{id} (DONE)
 
-- PUT /notes/{id} (TO DO)
+- PUT /notes/{id} (DONE)
 
 - PATCH /notes/{id} (TO DO)
 

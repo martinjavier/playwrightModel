@@ -106,3 +106,50 @@ export async function CreateNewNote(apiBaseUrl: String, noteTitle: String, noteD
       console.error('Create New Note Error:', error.message, error.response, error.data)
   }
 }
+
+export async function GetAllNotes(apiBaseUrl: String) {
+  try {
+      const currentToken = getToken();
+      const response = await axios.get(`${apiBaseUrl}/notes`, {
+        headers: {
+          'x-auth-token': currentToken
+        }
+      });
+      return response;
+  } catch (error) {
+    console.error('Error en la solicitud Get All Notes:', error.response ? error.response.data : error.message);
+  }
+}
+
+export async function GetOneNote(apiBaseUrl: String, noteID: String) {
+  try {
+      const currentToken = getToken();
+      const response = await axios.get(`${apiBaseUrl}/notes/${noteID}`,  
+        {
+          headers: {
+            'x-auth-token': currentToken
+          }
+        }
+      );
+      return response;
+  } catch (error) {
+    console.error('Error en la solicitud Get One Note:', error.response ? error.response.data : error.message);
+  }
+}
+
+export async function UpdateExistingNote(apiBaseUrl: String, noteID: String, noteData: any) {
+  try {
+      const currentToken = getToken();
+      const response = await axios.put(`${apiBaseUrl}/notes/${noteID}`, 
+        noteData,
+        {
+          headers: {
+            'x-auth-token': currentToken
+          }
+        }
+      );
+      return response;
+  } catch (error) {
+    console.error('Error en la solicitud Update One Note:', error.response ? error.response.data : error.message);
+  }
+}
