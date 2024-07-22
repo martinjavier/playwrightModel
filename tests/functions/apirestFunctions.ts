@@ -153,3 +153,37 @@ export async function UpdateExistingNote(apiBaseUrl: String, noteID: String, not
     console.error('Error en la solicitud Update One Note:', error.response ? error.response.data : error.message);
   }
 }
+
+export async function ChangeNoteStatus(apiBaseUrl: String, noteID: String, noteCompleted: boolean) {
+  try {
+      const currentToken = getToken();
+      const data = { completed: noteCompleted };
+      const response = await axios.patch(`${apiBaseUrl}/notes/${noteID}`, 
+        data,
+        {
+          headers: {
+            'x-auth-token': currentToken
+          }
+        }
+      );
+      return response;
+  } catch (error) {
+    console.error('Error en la solicitud Change Note Status:', error.response ? error.response.data : error.message);
+  }
+}
+
+export async function DeleteOneNote(apiBaseUrl: String, noteID: String) {
+  try {
+      const currentToken = getToken();
+      const response = await axios.delete(`${apiBaseUrl}/notes/${noteID}`, 
+        {
+          headers: {
+            'x-auth-token': currentToken
+          }
+        }
+      );
+      return response;
+  } catch (error) {
+    console.error('Error en la solicitud Delete One Note:', error.response ? error.response.data : error.message);
+  }
+}

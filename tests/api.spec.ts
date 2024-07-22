@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import axios from 'axios';
 import { setToken, getToken } from './functions/tokenManager';
-import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote } from './functions/apirestFunctions';
+import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote, ChangeNoteStatus, DeleteOneNote } from './functions/apirestFunctions';
 import { generateRandomString, generateRandomNumber} from './functions/generationFunctions';
 import { faker } from '@faker-js/faker';
 
@@ -61,7 +61,7 @@ test.describe.serial('User lifecycle', () => {
     expect(returnValue?.data.data.phone).toBe(userPhoneNumber)
     expect(returnValue?.data.data.company).toBe(userCompanyName)
 
-    // Verify Update Profile Information
+    // Verify Updated Profile Information
     returnValue = await GETProfile(`${process.env.URL}`);
     expect(returnValue?.data.message).toBe('Profile successful')
     expect(returnValue?.data.status).toBe(200)
@@ -262,6 +262,100 @@ test.describe.serial('Notes lifecycle', () => {
     expect(getResult?.data.data.description).toBe(newNoteDescription)
     expect(getResult?.data.data.completed).toBe(true)
     expect(getResult?.data.data.category).toBe("Work")
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test('Change Note Status', async({page}) => {
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    var authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // New note information
+    noteTitle = generateRandomString(8)
+    noteDescription = generateRandomString(12)
+    noteCategory = 'Home' // Home, Work or Personal
+
+    // Create a new Note
+    authToken = getToken()
+    const registerValue = await CreateNewNote(`${process.env.URL}`, noteTitle, noteDescription, noteCategory);
+    var noteID = registerValue?.data.data.id
+    expect(registerValue?.data.success).toBe(true)
+    expect(registerValue?.data.status).toBe(200)
+    expect(registerValue?.data.message).toBe('Note successfully created')
+
+    // New note information for update
+    const newNoteTitle = generateRandomString(8)
+    const newNoteDescription = generateRandomString(12)
+    const newNoteCategory = 'Work' // Home, Work or Personal
+
+    // Change Note Status
+    authToken = getToken()   
+    const noteCompleted:boolean = false
+    const patchResponse = await ChangeNoteStatus(`${process.env.URL}`, noteID, noteCompleted)
+    expect(patchResponse?.data.success).toBe(true)
+    expect(patchResponse?.data.status).toBe(200)
+    expect(patchResponse?.data.message).toBe('Note successfully Updated')
+    expect(patchResponse?.data.data.completed).toBe(false)
+
+    // Get Updated Note
+    authToken = getToken()
+    var getResult = await GetOneNote(`${process.env.URL}`, noteID)
+    expect(getResult?.data.success).toBe(true)
+    expect(getResult?.data.status).toBe(200)
+    expect(getResult?.data.message).toBe('Note successfully retrieved')
+    expect(getResult?.data.data.id).toBe(noteID)
+    expect(getResult?.data.data.completed).toBe(false)
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+  })
+
+  test('Delete One Note', async({page}) => {
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    var authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // New note information
+    noteTitle = generateRandomString(8)
+    noteDescription = generateRandomString(12)
+    noteCategory = 'Home' // Home, Work or Personal
+
+    // Create a new Note
+    authToken = getToken()
+    const registerValue = await CreateNewNote(`${process.env.URL}`, noteTitle, noteDescription, noteCategory);
+    var noteID = registerValue?.data.data.id
+    expect(registerValue?.data.success).toBe(true)
+    expect(registerValue?.data.status).toBe(200)
+    expect(registerValue?.data.message).toBe('Note successfully created')
+
+    // Delete An Existing Note
+    authToken = getToken()   
+    const deleteResponse = await DeleteOneNote(`${process.env.URL}`, noteID)
+    expect(deleteResponse?.data.success).toBe(true)
+    expect(deleteResponse?.data.status).toBe(200)
+    expect(deleteResponse?.data.message).toBe('Note successfully deleted')
 
     // Logout
     var response = await DELETELogout(`${process.env.URL}`);
