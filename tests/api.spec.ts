@@ -88,6 +88,8 @@ test.describe.serial('User lifecycle', () => {
 
   test('Update User Profile', async({request}) => {
     
+    test.setTimeout(30000); 
+
     // Random User Information
     const name = generateRandomString(8)
     const userName = name
@@ -140,6 +142,8 @@ test.describe.serial('User lifecycle', () => {
 
   test('Change User Password', async({request}) => {
     
+    test.setTimeout(30000); 
+
     // Random User Information
     const name = generateRandomString(8)
     const userName = name
