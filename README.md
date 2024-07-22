@@ -22,18 +22,37 @@
 
 - Include basic API REST functions (Done)
 
-- Include api rest cases (Done)
+- Include api rest test cases (Done)
 
 - All API test cases running fine (Done)
 
-- POST /notes (DONE)
+// USERS
 
-- GET /notes (DONE)
+- User creation (DONE)
 
-- GET /notes/{id} (DONE)
+- Get User Profile (DONE)
 
-- PUT /notes/{id} (DONE)
+- Update User Profile (DONE)
 
-- PATCH /notes/{id} (TO DO)
+- Change User Password (DONE)
 
-- DELETE /notes/{id} (TO DO)
+- Logout Account (DONE)
+
+- Delete User Account (DONE)
+
+// NOTES
+
+- Note Creation (DONE)
+
+- Get All Notes (DONE)
+
+- Get One Note (DONE)
+
+- Update Existing Note (DONE)
+
+- Change Note Status (DONE)
+
+- Delete One Note (DONE)
+
+Notes API Documentation:
+https://practice.expandtesting.com/notes/api/api-docs/

@@ -64,6 +64,23 @@ export async function UpdateProfile(apiBaseUrl: string, userData: any) {
   }
 }
 
+export async function ChangeUserPassword(apiBaseUrl: string, userData: any) {
+  try {
+    const currentToken = getToken();
+    const response = await axios.post(`${apiBaseUrl}/users/change-password`, 
+      userData,  
+      {
+        headers: {
+          'x-auth-token': currentToken
+        }
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error('Error on Change User Password:', error.response ? error.response.data : error.message);
+  }
+}
+
 export async function DELETELogout(apiBaseUrl: String) {
   try {
     const currentToken = getToken()

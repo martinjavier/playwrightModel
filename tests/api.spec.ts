@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { setToken, getToken } from './functions/tokenManager';
-import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote, ChangeNoteStatus, DeleteOneNote } from './functions/apirestFunctions';
+import { GETHealthcheck, GETProfile, POSTLogin, POSTRegister, DELETELogout, DeleteUser, UpdateProfile, CreateNewNote, GetAllNotes, GetOneNote, UpdateExistingNote, ChangeNoteStatus, DeleteOneNote, ChangeUserPassword } from './functions/apirestFunctions';
 import { generateRandomString, generateRandomNumber} from './functions/generationFunctions';
 import { faker } from '@faker-js/faker';
 
@@ -130,6 +130,65 @@ test.describe.serial('User lifecycle', () => {
     expect(getResult?.data.data.email).toBe(userEMail)
     expect(getResult?.data.data.phone).toBe(userPhoneNumber)
     expect(getResult?.data.data.company).toBe(userCompanyName)
+
+    // Delte an user
+    const deleteResult = await DeleteUser(`${process.env.URL}`);
+    expect(deleteResult?.data.success).toBe(true)
+    expect(deleteResult?.data.status).toBe(200)
+    expect(deleteResult?.data.message).toBe('Account successfully deleted')
+  })
+
+  test('Change User Password', async({request}) => {
+    
+    // Random User Information
+    const name = generateRandomString(8)
+    const userName = name
+    const userEMail = name+'@hotmail.com'
+    const userPassword = generateRandomString(8)
+    const userPhoneNumber = generateRandomNumber(9)
+    const userCompanyName = faker.company.name()
+
+    // Register a new user
+    const registerResult = await POSTRegister(`${process.env.URL}`, userName, userEMail, userPassword);
+    expect(registerResult?.data.success).toBe(true)
+    expect(registerResult?.data.message).toBe('User account created successfully')
+    expect(registerResult?.data.status).toBe(201)
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, userPassword);
+    var token = loginResult?.response.data.data.token;
+    authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
+
+    // Change Password
+    authToken = getToken()
+    const newUserPassword = generateRandomString(8)
+    const userData = { currentPassword: userPassword, newPassword: newUserPassword };
+    var changePasswordResult = await ChangeUserPassword(`${process.env.URL}`, userData)
+    //console.log("change password: ", changePasswordResult)
+    expect(changePasswordResult?.data.message).toBe('The password was successfully updated')
+    expect(changePasswordResult?.data.status).toBe(200)
+    expect(changePasswordResult?.data.success).toBe(true)
+    expect(changePasswordResult?.status).toBe(200)
+    expect(changePasswordResult?.statusText).toBe('OK')
+
+    // Logout
+    var response = await DELETELogout(`${process.env.URL}`);
+    expect(response?.data.success).toBe(true)
+    expect(response?.data.status).toBe(200)
+    expect(response?.data.message).toBe('User has been successfully logged out')
+
+    // Login
+    var loginResult = await POSTLogin(`${process.env.URL}`, userEMail, newUserPassword);
+    var token = loginResult?.response.data.data.token;
+    authToken = token;
+    setToken(authToken)
+    expect(loginResult?.response.data.status).toBe(200)
+    expect(authToken).toBeTruthy();
+    expect(getToken()).toBe(authToken);
 
     // Delte an user
     const deleteResult = await DeleteUser(`${process.env.URL}`);
